@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOODLEBEE - Discover The Difference!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FFD700; /* Vibrant Yellow */
+            --secondary-color: #121212; /* Dark Charcoal */
+            --text-color: #EAEAEA;
+            --background-color: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        h1, h2, h3, h4, h5, h6, .navbar-brand .fw-bold {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* --- Animations --- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Components --- */
+        .navbar {
+            background-color: var(--secondary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .navbar-brand .fw-bold {
+            color: var(--primary-color);
+        }
+        .navbar-brand .tagline {
+            color: var(--text-color);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://i.ibb.co/TBhLYT1B/foodlebee-banner-img.jpg') center center/cover no-repeat;
+            color: white;
+            padding: 8rem 0;
+            text-align: center;
+        }
+        .hero h1 {
+            color: var(--primary-color);
+            font-size: 3.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .menu-category {
+            margin-bottom: 3rem;
+        }
+
+        .menu-category h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .menu-item-card {
+            background-color: var(--secondary-color);
+            border: 1px solid #333;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+        .menu-item-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+            border-color: var(--primary-color);
+        }
+        .price {
+            font-weight: 500;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        .add-btn, .remove-btn {
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .add-btn {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+        .add-btn:hover {
+            background-color: white;
+            color: black;
+            transform: scale(1.05);
+        }
+        .add-btn.added {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
+        .remove-btn {
+            background-color: #dc3545; /* Red */
+            color: white;
+        }
+
+        .accordion-item {
+            background-color: var(--secondary-color);
+            border: 1px solid #333;
+        }
+        .accordion-button {
+            background-color: #212121;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: var(--primary-color);
+            color: black;
+        }
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+        }
+        .accordion-button::after {
+            filter: invert(1) grayscale(1) brightness(200%);
+        }
+
+        .cart-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: black;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .cart-fab:hover {
+            transform: scale(1.1);
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #c0392b;
+            color: white;
+            font-size: 0.8rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+        }
+        .modal-header {
+            background-color: var(--primary-color);
+            color: black;
+            border-bottom: none;
+        }
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(1) brightness(0);
+        }
+        .modal-body .form-control, .modal-body .form-select {
+            background-color: #333;
+            color: white;
+            border-color: #444;
+        }
+        .modal-body .form-control:focus, .modal-body .form-select:focus {
+            background-color: #333;
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: none;
+        }
+        .modal-body .form-control::placeholder {
+            color: #aaa; /* Lighter grey for better visibility */
+            opacity: 1; /* Ensure it's not transparent */
+        }
+        .modal-body .form-control::placeholder {
+            color: #aaa; /* Lighter grey for better visibility */
+            opacity: 1; /* Ensure it's not transparent */
+        }
+        .invalid-feedback {
+            color: #ff8a80;
+        }
+        .order-type-btn {
+            flex-grow: 1;
+            border: 2px solid #444;
+            width: 50%; /* Ensure equal width */
+        }
+        .order-type-btn.active {
+            background-color: var(--primary-color);
+            color: black;
+            border-color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .footer {
+            background-color: var(--secondary-color);
+            padding: 3rem 0 1rem 0;
+            margin-top: 4rem;
+            border-top: 3px solid var(--primary-color);
+            text-align: center;
+        }
+        .footer h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .footer p, .footer a {
+            color: #aaa;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: var(--primary-color);
+        }
+        .footer .fas {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="order-success-banner" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none; position: fixed; top: 0; width: 100%; z-index: 2000;">
+        <strong>Order Sent!</strong> Your order has been successfully sent.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div class="fw-bold">FOODLEBEE</div>
+                <div class="tagline">DISCOVER THE DIFFERENCE!</div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container fade-in">
+            <h1>Authentic Flavors, Delivered Fast</h1>
+            <p class="lead">Experience the best of Maharashtrian, Punjabi, and Chinese cuisine.</p>
+            <p class="fw-bold">Free Home Delivery!</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <!-- Menu Section -->
+        <div id="menu">
+            <!-- Thalis (Highlighted) -->
+            <div class="menu-category fade-in">
+                <h2>Our Famous Thalis</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="thalis-menu"></div>
+            </div>
+
+            <!-- Other Categories -->
+            <div class="menu-category fade-in">
+                <h2>Full Menu</h2>
+                <div class="accordion" id="menu-accordion"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>FOODLEBEE</h5>
+                    <p>Discover The Difference!</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Contact Us</h5>
+                    <p><a href="tel:7028349495"><i class="fas fa-phone"></i> 7028349495</a></p>
+                    <p><a href="tel:7387949594"><i class="fas fa-phone"></i> 7387949594</a></p>
+                    <p><a href="tel:7385464140"><i class="fas fa-phone"></i> 7385464140</a></p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Find Us</h5>
+                    <p><i class="fas fa-map-marker-alt"></i> R 10, Shop No 43, Life Republic, Kolte Patil</p>
+                </div>
+            </div>
+            <hr style="border-color: #444;">
+                        <p class="mt-3">Made by Ishaan Dalvi</p>
+        </div>
+    </footer>
+
+    <!-- Cart Floating Action Button -->
+    <div class="cart-fab" data-bs-toggle="modal" data-bs-target="#cartModal">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count" style="display: none;">0</span>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Your Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cart-items">
+                        <p class="text-center text-muted">Your cart is empty. Add some items from the menu!</p>
+                    </div>
+                    <hr style="border-color: #444;">
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Total:</span>
+                        <span id="cart-total" class="price">₹0</span>
+                    </div>
+                    <hr style="border-color: #444;">
+                    <!-- Customer Details Form -->
+                    <form id="customer-details-form" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="customer-name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="customer-name" placeholder="Enter your name" required>
+                            <div class="invalid-feedback">Please enter your name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Service</label>
+                            <div class="d-grid gap-2 d-sm-flex">
+                                <button type="button" class="btn btn-outline-warning order-type-btn active" data-value="pickup">Pick Up</button>
+                                <button type="button" class="btn btn-outline-warning order-type-btn" data-value="delivery">Home Delivery</button>
+                            </div>
+                            <input type="hidden" id="order-type" value="pickup">
+                        </div>
+                        <div class="mb-3" id="address-field" style="display: none;">
+                            <label for="customer-address" class="form-label">Delivery Address</label>
+                            <textarea class="form-control" id="customer-address" rows="2" placeholder="Enter your full address" required></textarea>
+                            <div class="invalid-feedback">Please enter your address for delivery.</div>
+                        </div>
+                        <div class="mt-3">
+                            <label for="special-notes" class="form-label">Special Notes (optional)</label>
+                            <textarea class="form-control" id="special-notes" rows="2" placeholder="e.g., make it extra spicy"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Keep Shopping</button>
+                    <button type="button" class="btn add-btn" id="send-bill-btn" onclick="sendWhatsAppOrder()">
+                        <i class="fab fa-whatsapp"></i> Send Bill
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let menu = {};
+        const cart = {};
+
+        function parseMenuData() {
+            const menuDataContainer = document.getElementById('menu-data');
+            const newMenu = {};
+            if (!menuDataContainer) return newMenu;
+
+            menuDataContainer.querySelectorAll('[data-category]').forEach(categoryDiv => {
+                const categoryName = categoryDiv.dataset.category;
+                newMenu[categoryName] = [];
+                categoryDiv.querySelectorAll('[data-id]').forEach(itemDiv => {
+                    newMenu[categoryName].push({
+                        id: itemDiv.dataset.id,
+                        name: itemDiv.dataset.name,
+                        price: parseInt(itemDiv.dataset.price, 10)
+                    });
+                });
+            });
+            return newMenu;
+        }
+
+        function renderMenu() {
+            const thalisContainer = document.getElementById('thalis-menu');
+            const accordionContainer = document.getElementById('menu-accordion');
+
+            // Clear existing menu content
+            thalisContainer.innerHTML = '';
+            accordionContainer.innerHTML = '';
+
+            if (menu.Thalis) {
+                let thalisHTML = '';
+                menu.Thalis.forEach(item => {
+                    thalisHTML += createMenuItemHTML(item);
+                });
+                thalisContainer.innerHTML = thalisHTML;
+            }
+
+            let accordionHTML = '';
+            let categoryIndex = 0;
+            for (const category in menu) {
+                if (category !== 'Thalis') {
+                    accordionHTML += createAccordionItemHTML(category, menu[category], categoryIndex++);
+                }
+            }
+            accordionContainer.innerHTML = accordionHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            menu = parseMenuData();
+            renderMenu();
+
+            document.querySelectorAll('.order-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.order-type-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.innerHTML = b.dataset.value.charAt(0).toUpperCase() + b.dataset.value.slice(1).replace('-', ' ');
+                    });
+                    this.classList.add('active');
+                    this.innerHTML = `> ${this.dataset.value.charAt(0).toUpperCase() + this.dataset.value.slice(1).replace('-', ' ')} <`;
+
+                    const orderTypeInput = document.getElementById('order-type');
+                    orderTypeInput.value = this.dataset.value;
+                    
+                    const addressField = document.getElementById('address-field');
+                    const addressInput = document.getElementById('customer-address');
+                    if (this.dataset.value === 'delivery') {
+                        addressField.style.display = 'block';
+                        addressInput.required = true;
+                    } else {
+                        addressField.style.display = 'none';
+                        addressInput.required = false;
+                    }
+                });
+            });
+
+            const defaultOrderBtn = document.querySelector('.order-type-btn[data-value="pickup"]');
+            if (defaultOrderBtn) {
+                defaultOrderBtn.click();
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        function createMenuItemHTML(item) {
+            const safeName = item.name.replace(/'/g, "'");
+            return `
+                <div class="col fade-in">
+                    <div class="card menu-item-card h-100">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">${item.name}</h5>
+                                <p class="card-text price">₹${item.price}</p>
+                            </div>
+                            <div id="btn-container-${item.id}">
+                                <button class="btn add-btn" onclick="addToCart(this, '${item.id}', '${safeName}', ${item.price})">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createAccordionItemHTML(category, items, index) {
+            let itemsHTML = '';
+            items.forEach(item => {
+                itemsHTML += createMenuItemHTML(item);
+            });
+
+            const isExpanded = index === 0;
+            return `
+                <div class="accordion-item fade-in">
+                    <h2 class="accordion-header" id="heading-${index}">
+                        <button class="accordion-button ${isExpanded ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${index}" aria-expanded="${isExpanded}" aria-controls="collapse-${index}">
+                            ${category}
+                        </button>
+                    </h2>
+                    <div id="collapse-${index}" class="accordion-collapse collapse ${isExpanded ? 'show' : ''}" aria-labelledby="heading-${index}" data-bs-parent="#menu-accordion">
+                        <div class="accordion-body">
+                            <div class="row row-cols-1 row-cols-md-2 g-3">
+                                ${itemsHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addToCart(btn, id, name, price) {
+            if (cart[id]) {
+                cart[id].quantity++;
+            } else {
+                cart[id] = { name, price, quantity: 1 };
+            }
+            updateCart();
+            updateMenuButton(id);
+        }
+
+        function removeFromCart(id) {
+            if (cart[id]) {
+                cart[id].quantity--;
+                if (cart[id].quantity <= 0) {
+                    delete cart[id];
+                }
+            }
+            updateCart();
+            updateMenuButton(id);
+        }
+
+        function updateMenuButton(id) {
+            const btnContainer = document.getElementById(`btn-container-${id}`);
+            if (cart[id]) {
+                const safeName = cart[id].name.replace(/'/g, "'");
+                btnContainer.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-outline-danger remove-btn" onclick="removeFromCart('${id}')">-</button>
+                        <span class="mx-2">${cart[id].quantity}</span>
+                        <button class="btn btn-sm btn-outline-success add-btn" onclick="addToCart(this, '${id}', '${safeName}', ${cart[id].price})">+</button>
+                    </div>
+                `;
+            } else {
+                const item = findMenuItem(id);
+                if(item) {
+                    const safeName = item.name.replace(/'/g, "'");
+                    btnContainer.innerHTML = `<button class="btn add-btn" onclick="addToCart(this, '${item.id}', '${safeName}', ${item.price})">Add</button>`;
+                }
+            }
+        }
+
+        function findMenuItem(id) {
+            for (const category in menu) {
+                const item = menu[category].find(i => i.id === id);
+                if (item) return item;
+            }
+            return null;
+        }
+
+        function updateCart() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalEl = document.getElementById('cart-total');
+            const cartCountEl = document.getElementById('cart-count');
+            let total = 0;
+            let itemCount = 0;
+            
+            if (Object.keys(cart).length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-center text-muted">Your cart is empty.</p>';
+                cartTotalEl.innerText = '₹0';
+                cartCountEl.innerText = '0';
+                cartCountEl.style.display = 'none';
+                return;
+            }
+
+            let cartHTML = '';
+            for (const id in cart) {
+                const item = cart[id];
+                total += item.price * item.quantity;
+                itemCount += item.quantity;
+                const safeName = item.name.replace(/'/g, "'");
+                cartHTML += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <p class="mb-0 fw-bold">${item.name}</p>
+                            <p class="mb-0 text-white-50 small">₹${item.price} x ${item.quantity}</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold me-3 price">₹${item.price * item.quantity}</span>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart('${id}')"><i class="fas fa-minus"></i></button>
+                            <button class="btn btn-sm btn-outline-success ms-2" onclick="addToCart(this, '${id}', '${safeName}', ${item.price})"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                `;
+            }
+            cartItemsContainer.innerHTML = cartHTML;
+
+            cartTotalEl.innerText = `₹${total}`;
+            cartCountEl.innerText = itemCount;
+            cartCountEl.style.display = 'flex';
+        }
+
+        function resetApplicationState() {
+            // Clear the cart object
+            for (const id in cart) {
+                delete cart[id];
+            }
+            
+            // Update the visual cart to be empty
+            updateCart();
+            
+            // Reset all menu item buttons to their initial "Add" state
+            document.querySelectorAll('[id^="btn-container-"]').forEach(btnContainer => {
+                const id = btnContainer.id.replace('btn-container-', '');
+                const item = findMenuItem(id);
+                if (item) {
+                    const safeName = item.name.replace(/'/g, "'");
+                    btnContainer.innerHTML = `<button class="btn add-btn" onclick="addToCart(this, '${item.id}', '${safeName}', ${item.price})">Add</button>`;
+                }
+            });
+
+            // Reset the customer details form
+            const form = document.getElementById('customer-details-form');
+            form.reset();
+            form.classList.remove('was-validated');
+
+            // Reset the order type button to 'pickup' and hide address field
+            const defaultOrderBtn = document.querySelector('.order-type-btn[data-value="pickup"]');
+            if (defaultOrderBtn) {
+                defaultOrderBtn.click();
+            }
+        }
+
+        function sendWhatsAppOrder() {
+            const form = document.getElementById('customer-details-form');
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const menuDataContainer = document.getElementById('menu-data');
+            const phoneNumber = menuDataContainer.dataset.phoneNumber;
+            const customerName = document.getElementById('customer-name').value;
+            const orderType = document.getElementById('order-type').value;
+            const address = document.getElementById('customer-address').value;
+            const notes = document.getElementById('special-notes').value;
+            let total = 0;
+
+            if (Object.keys(cart).length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            let message = `🎉 *New Order from FOODLEBEE* 🎉\n\n`;
+            message += `*Customer Name:* ${customerName}\n`;
+            message += `*Order Type:* ${orderType === 'delivery' ? 'Home Delivery' : 'Pick Up'}\n`;
+            if (orderType === 'delivery') {
+                message += `*Address:* ${address}\n`;
+            }
+            message += `\n--- *Order Details* ---\n`;
+
+            for (const id in cart) {
+                const item = cart[id];
+                message += `*${item.name}* (x${item.quantity}) - ₹${item.price * item.quantity}\n`;
+                total += item.price * item.quantity;
+            }
+
+            message += `\n--------------------\n*Total Bill: ₹${total}*\n--------------------`;
+
+            if (notes) {
+                message += `\n\n*Special Notes:*\n_${notes}_`;
+            }
+            
+            message += `\n\nPlease confirm this order.`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+
+            const cartModalEl = document.getElementById('cartModal');
+            const cartModal = bootstrap.Modal.getInstance(cartModalEl);
+            const successBanner = document.getElementById('order-success-banner');
+
+            if (cartModal) {
+                cartModal.hide();
+            }
+
+            successBanner.style.display = 'block';
+            if (!bootstrap.Alert.getInstance(successBanner)) {
+                new bootstrap.Alert(successBanner);
+            }
+
+            setTimeout(resetApplicationState, 5000);
+        }
+    </script>
+
+    <!-- MENU DATA - EDIT ITEMS BELOW -->
+    <div id="menu-data" style="display: none;" data-phone-number="+919049364656">
+        <div data-category="Thalis">
+            <div data-id="thali1" data-name="Mutton Thali" data-price="350"></div>
+            <div data-id="thali2" data-name="Chicken Thali" data-price="280"></div>
+            <div data-id="thali3" data-name="Veg Thali" data-price="220"></div>
+            <div data-id="thali4" data-name="Fish Thali" data-price="320"></div>
+            <div data-id="thali5" data-name="Special Biryani Thali" data-price="300"></div>
+        </div>
+        <div data-category="Starters">
+            <div data-id="st1" data-name="Paneer Tikka" data-price="200"></div>
+            <div data-id="st2" data-name="Hara Bhara Kabab" data-price="180"></div>
+            <div data-id="st3" data-name="Chicken 65" data-price="250"></div>
+        </div>
+        <div data-category="Soups">
+            <div data-id="so1" data-name="Manchow Soup" data-price="120"></div>
+            <div data-id="so2" data-name="Tomato Soup" data-price="100"></div>
+        </div>
+        <div data-category="Chinese">
+            <div data-id="ch1" data-name="Veg Hakka Noodles" data-price="180"></div>
+            <div data-id="ch2" data-name="Chicken Fried Rice" data-price="220"></div>
+            <div data-id="ch3" data-name="Gobi Manchurian" data-price="190"></div>
+        </div>
+        <div data-category="Veg Main Course">
+            <div data-id="veg1" data-name="Paneer Butter Masala" data-price="240"></div>
+            <div data-id="veg2" data-name="Mix Veg Kolhapuri" data-price="210"></div>
+        </div>
+        <div data-category="Chicken Curry">
+            <div data-id="ck1" data-name="Butter Chicken" data-price="280"></div>
+            <div data-id="ck2" data-name="Chicken Handi" data-price="300"></div>
+        </div>
+        <div data-category="Mutton Curry">
+            <div data-id="mt1" data-name="Mutton Rogan Josh" data-price="380"></div>
+            <div data-id="mt2" data-name="Mutton Masala" data-price="360"></div>
+        </div>
+        <div data-category="Kabab & Tandoor">
+            <div data-id="tn1" data-name="Chicken Tandoori (Full)" data-price="450"></div>
+            <div data-id="tn2" data-name="Seekh Kabab" data-price="260"></div>
+        </div>
+        <div data-category="Fish">
+            <div data-id="fi1" data-name="Surmai Fry" data-price="350"></div>
+            <div data-id="fi2" data-name="Prawns Curry" data-price="320"></div>
+        </div>
+        <div data-category="Breads">
+            <div data-id="br1" data-name="Tandoori Roti" data-price="20"></div>
+            <div data-id="br2" data-name="Butter Naan" data-price="40"></div>
+        </div>
+        <div data-category="Rice & Biryani">
+            <div data-id="ri1" data-name="Jeera Rice" data-price="150"></div>
+            <div data-id="ri2" data-name="Chicken Dum Biryani" data-price="280"></div>
+            <div data-id="ri3" data-name="Mutton Dum Biryani" data-price="380"></div>
+        </div>
+        <div data-category="Cold Drinks">
+            <div data-id="cd1" data-name="Coke/Pepsi" data-price="40"></div>
+            <div data-id="cd2" data-name="Buttermilk" data-price="50"></div>
+        </div>
+    </div>
+</body>
+</html>
