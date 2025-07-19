@@ -176,6 +176,11 @@
             font-weight: bold;
         }
 
+        .input-group-text {
+            background-color: var(--primary-color);
+            color: black;
+            border-color: var(--primary-color);
+        }
         .modal-content {
             background-color: var(--secondary-color);
             color: var(--text-color);
@@ -345,6 +350,14 @@
                             <label for="customer-name" class="form-label">Your Name</label>
                             <input type="text" class="form-control" id="customer-name" placeholder="Enter your name" required>
                             <div class="invalid-feedback">Please enter your name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-phone" class="form-label">Mobile Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text">+91</span>
+                                <input type="tel" class="form-control" id="customer-phone" placeholder="Enter 10-digit number" required pattern="[0-9]{10}">
+                            </div>
+                            <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Service</label>
@@ -630,6 +643,7 @@
             const form = document.getElementById('customer-details-form');
             form.reset();
             form.classList.remove('was-validated');
+            document.getElementById('customer-phone').value = '';
 
             // Reset the order type button to 'pickup' and hide address field
             const defaultOrderBtn = document.querySelector('.order-type-btn[data-value="pickup"]');
@@ -648,6 +662,7 @@
             const menuDataContainer = document.getElementById('menu-data');
             const phoneNumber = menuDataContainer.dataset.phoneNumber;
             const customerName = document.getElementById('customer-name').value;
+            const customerPhone = "+91" + document.getElementById('customer-phone').value;
             const orderType = document.getElementById('order-type').value;
             const address = document.getElementById('customer-address').value;
             const notes = document.getElementById('special-notes').value;
@@ -660,6 +675,7 @@
 
             let message = `🎉 *New Order from FOODLEBEE* 🎉\n\n`;
             message += `*Customer Name:* ${customerName}\n`;
+            message += `*Mobile Number:* ${customerPhone}\n`;
             message += `*Order Type:* ${orderType === 'delivery' ? 'Home Delivery' : 'Pick Up'}\n`;
             if (orderType === 'delivery') {
                 message += `*Address:* ${address}\n`;
