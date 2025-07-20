@@ -1103,11 +1103,11 @@
 
             // Save order to Firestore
             try {
-                await db.collection('orders').add(orderData);
-                console.log("Order successfully written to Firestore!");
+              const app = firebase.initializeApp(firebaseConfig);
+              const db = firebase.firestore();
+              console.log("Firebase connected!"); // Check console for this message
             } catch (error) {
-                console.error("Error writing order to Firestore: ", error);
-                alert("There was an error saving your order. Please try again.");
+              console.error("Firebase error:", error);
             }
 
             const cartModalEl = document.getElementById('cartModal');
