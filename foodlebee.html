@@ -1127,6 +1127,13 @@
         }
     </script>
 
+
+    <script>
+  // Test Firestore directly
+  firebase.firestore().collection("test").add({test: new Date()})
+    .then(() => console.log("Firestore test successful!"))
+    .catch(e => console.error("Firestore test failed:", e));
+</script>
     
 </body>
 </html>
