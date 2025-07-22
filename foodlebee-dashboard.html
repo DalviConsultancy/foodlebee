@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodlebee Analytics Dashboard</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/rKrWvh85/Foodlebee.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --body-bg-light: #f8f9fa;
+            --body-color-light: #212529;
+            --navbar-bg-light: #e9ecef;
+            --navbar-brand-color-light: #212529; /* Dark color for light mode brand */
+            --nav-link-color-light: #000000;
+            --nav-link-active-bg-light: #dee2e6;
+            --nav-link-active-color-light: #000000;
+            --table-color-light: #212529;
+            --table-striped-bg-light: #f2f2f2;
+            --card-bg-light: #ffffff;
+            --card-border-light: #ced4da; /* Brighter border for light mode */
+            --hr-color-light: #adb5bd;
+            --yellow-highlight-light: #DAA520; /* Gold for light mode */
+            --loader-color-light: #FFEA00; /* Brighter yellow for light mode loader */
+            --footer-color-light: #6c757d;
+        }
+
+        [data-bs-theme="dark"] {
+            --body-bg-dark: #000000;
+            --body-color-dark: #ffffff;
+            --navbar-bg-dark: #111;
+            --navbar-brand-color-dark: #FFD700;
+            --nav-link-color-dark: #ccc;
+            --nav-link-active-bg-dark: #222;
+            --nav-link-active-color-dark: #FFD700;
+            --table-color-dark: #fff;
+            --table-striped-bg-dark: #111;
+            --card-bg-dark: #111;
+            --card-border-dark: #555; /* Brighter border for dark mode */
+            --hr-color-dark: #555;
+            --yellow-highlight-dark: #FFD700; /* Gold for dark mode */
+            --loader-bg-dark: rgba(0, 0, 0, 0.8);
+            --loader-color-dark: #FFD700;
+            --footer-color-dark: #888;
+        }
+
+        body {
+            background-color: var(--body-bg-light);
+            color: var(--body-color-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        [data-bs-theme="dark"] body {
+            background-color: var(--body-bg-dark) !important;
+            color: var(--body-color-dark) !important;
+        }
+
+        .navbar {
+            background-color: var(--navbar-bg-light) !important;
+            border-bottom: 1px solid var(--card-border-light);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        [data-bs-theme="dark"] .navbar {
+            background-color: var(--navbar-bg-dark) !important;
+            border-bottom-color: var(--card-border-dark);
+        }
+
+        .navbar-brand {
+            color: var(--navbar-brand-color-light) !important;
+            transition: color 0.3s;
+        }
+        [data-bs-theme="dark"] .navbar-brand {
+            color: var(--navbar-brand-color-dark) !important;
+        }
+
+        .nav-tabs {
+            border-bottom-color: var(--card-border-light);
+            transition: border-color 0.3s;
+        }
+        [data-bs-theme="dark"] .nav-tabs {
+            border-bottom-color: var(--card-border-dark);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--nav-link-color-light);
+            border: 1px solid transparent;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+        }
+        [data-bs-theme="dark"] .nav-tabs .nav-link {
+            color: var(--nav-link-color-dark);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--nav-link-active-bg-light);
+            border-color: var(--card-border-light) var(--card-border-light) var(--body-bg-light);
+            color: var(--nav-link-active-color-light);
+        }
+        [data-bs-theme="dark"] .nav-tabs .nav-link.active {
+            background-color: var(--nav-link-active-bg-dark);
+            border-color: var(--card-border-dark) var(--card-border-dark) var(--body-bg-dark);
+            color: var(--nav-link-active-color-dark);
+        }
+
+        .table {
+            color: #000000; /* All table text black */
+            border-color: var(--card-border-light);
+            transition: color 0.3s, border-color 0.3s;
+        }
+        [data-bs-theme="dark"] .table {
+            color: #000000; /* All table text black */
+            border-color: var(--card-border-dark);
+        }
+
+        .table thead {
+            background-color: var(--navbar-bg-light);
+            color: #000000; /* All table header text black */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        [data-bs-theme="dark"] .table thead {
+            background-color: var(--navbar-bg-dark);
+            color: #000000; /* All table header text black */
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) > * {
+            --bs-table-accent-bg: var(--table-striped-bg-light);
+            color: #000000; /* All striped row text black */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        [data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+            --bs-table-accent-bg: var(--table-striped-bg-dark);
+            color: #000000; /* All striped row text black */
+        }
+        
+
+        .card, .list-group-item {
+            background-color: var(--card-bg-light);
+            border: 1px solid var(--card-border-light);
+            color: var(--body-color-light);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .list-group-item {
+            background-color: var(--card-bg-dark);
+            border: 1px solid var(--card-border-dark);
+            color: var(--body-color-dark);
+        }
+
+        .card .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .card .card-body .flex-grow-1 {
+            flex-grow: 1;
+        }
+        .card:hover, .list-group-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        [data-bs-theme="dark"] .card:hover, [data-bs-theme="dark"] .list-group-item:hover {
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
+        }
+
+        .bill-card {
+            margin-bottom: 0.5rem !important; /* Further reduced spacing */
+            text-align: center; /* Center text */
+        }
+        .bill-card .card-body {
+            padding: 0.75rem; /* Reduced padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .bill-card .card-body p {
+            font-size: 0.9rem; /* Smaller font for details */
+            line-height: 1.3;
+            margin-bottom: 0;
+        }
+        .bill-card .card-body ul {
+            font-size: 0.9rem;
+            line-height: 1.3;
+            margin-bottom: 0; /* Remove bottom margin from ul */
+            padding-left: 0; /* Remove default padding for list-unstyled */
+        }
+        .bill-card .card-body ul li {
+            margin-bottom: 0; /* Remove margin between list items */
+        }
+        .bill-card .card-body hr {
+            border-color: var(--hr-color-light) !important;
+            transition: border-color 0.3s;
+        }
+        [data-bs-theme="dark"] .bill-card .card-body hr {
+            border-color: var(--hr-color-dark) !important;
+        }
+
+        .text-warning {
+            color: var(--yellow-highlight-light) !important;
+            font-weight: bold; /* Make yellow text bold */
+            transition: color 0.3s;
+        }
+        [data-bs-theme="dark"] .text-warning {
+            color: var(--yellow-highlight-dark) !important;
+        }
+
+        #all-bills-container {
+            /* This will be managed by Bootstrap's row and col classes */
+        }
+        
+        .card {
+            /* width: 100%; Removed for dynamic width */
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--loader-bg-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: background-color 0.3s;
+        }
+        [data-bs-theme="dark"] #loader {
+            background: var(--loader-bg-dark);
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--loader-color-light) !important;
+            transition: color 0.3s;
+        }
+        [data-bs-theme="dark"] .spinner-border {
+            color: var(--loader-color-dark) !important;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: var(--footer-color-light);
+            margin-top: 2rem;
+            transition: color 0.3s;
+        }
+        [data-bs-theme="dark"] .footer {
+            color: var(--footer-color-dark);
+        }
+
+        .tab-pane {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px; /* Or any desired fixed height */
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .time-granularity-selector {
+            width: auto;
+            display: inline-block;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem; /* Increased padding */
+            color: #ffffff; /* White text for black background */
+            background-color: #000000; /* Black background */
+            border-color: #000000; /* Black border */
+        }
+        [data-bs-theme="dark"] .time-granularity-selector {
+            color: #ffffff; /* White text for black background */
+            background-color: #000000; /* Black background */
+            border-color: #000000; /* Black border */
+        }
+    </style>
+</head>
+<body data-bs-theme="light">
+    <div id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Foodlebee Dashboard</a>
+            <div class="ms-auto">
+                <button id="theme-toggle" class="btn btn-light">
+                    <i class="bi bi-moon-fill"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+
+        <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="updates-tab" data-bs-toggle="tab" data-bs-target="#updates" type="button" role="tab">Updates</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">Analytics</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="sales-revenue-tab" data-bs-toggle="tab" data-bs-target="#sales-revenue" type="button" role="tab">Sales & Revenue</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="addresses-tab" data-bs-toggle="tab" data-bs-target="#addresses" type="button" role="tab">Addresses</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="all-bills-tab" data-bs-toggle="tab" data-bs-target="#all-bills" type="button" role="tab">Bills</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="full-data-tab" data-bs-toggle="tab" data-bs-target="#full-data" type="button" role="tab">Full Data</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="updates" role="tabpanel">
+                <div class="row mt-3 justify-content-center">
+                    <div class="col-12 mb-3 d-flex justify-content-center">
+                        <label for="updates-time-granularity" class="form-label me-2 mb-0 align-self-center">Time Granularity:</label>
+                        <select class="form-select time-granularity-selector" id="updates-time-granularity">
+                            <option value="day">Daily</option>
+                            <option value="week">Weekly</option>
+                            <option value="month">Monthly</option>
+                            <option value="quarter">Quarterly</option>
+                            <option value="year">Annually</option>
+                            <option value="forever">Forever</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-center">
+                        <h5>Items Sold Over Time</h5>
+                    </div>
+                    <div id="items-sold-container" class="row justify-content-center">
+                        <!-- Items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                <div class="row mt-3">
+                    <div class="col-12 mb-3 d-flex justify-content-center">
+                        <label for="analytics-time-granularity" class="form-label me-2 mb-0 align-self-center">Time Granularity:</label>
+                        <select class="form-select time-granularity-selector" id="analytics-time-granularity">
+                            <option value="day">Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
+                            <option value="year">Year</option>
+                            <option value="forever">Forever</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-4 chart-container">
+                        <h5>Top 5 Selling Items</h5>
+                        <canvas id="top-selling-items-chart"></canvas>
+                    </div>
+                    <div class="col-12 mb-4 chart-container">
+                        <h5>Top 5 Customers by Revenue</h5>
+                        <canvas id="top-customers-chart"></canvas>
+                    </div>
+                    <div class="col-12 mb-4 chart-container">
+                        <h5>Order Type Distribution</h5>
+                        <canvas id="order-type-chart"></canvas>
+                    </div>
+                    <div class="col-12 mb-4 chart-container">
+                        <h5>Average Order Value Over Time</h5>
+                        <canvas id="avg-order-value-chart"></canvas>
+                    </div>
+                    <div class="col-12 mb-4 chart-container">
+                        <h5>Total Orders Over Time</h5>
+                        <canvas id="total-orders-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="sales-revenue" role="tabpanel">
+                <div class="row mt-3">
+                    <div class="col-12 mb-3 d-flex justify-content-center">
+                        <label for="time-granularity" class="form-label me-2 mb-0 align-self-center">Time Granularity:</label>
+                        <select class="form-select time-granularity-selector" id="time-granularity">
+                            <option value="day">Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
+                            <option value="year">Year</option>
+                            <option value="forever">Forever</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-4 chart-container">
+                            <h5>Sales and Revenue Over Time</h5>
+                            <canvas id="revenue-sales-line-chart"></canvas>
+                        </div>
+                        <div class="col-12 mb-4 chart-container">
+                            <h5>Sales & Revenue by Category</h5>
+                            <canvas id="revenue-category-chart"></canvas>
+                        </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="addresses" role="tabpanel">
+                <div class="mb-3 mt-3 d-flex align-items-center">
+                    <input type="search" id="addresses-search-input" class="form-control me-2" placeholder="Search addresses by name, phone, or address...">
+                    <select class="form-select w-auto" id="addresses-sort-by">
+                        <option value="address-asc">Address (A-Z)</option>
+                        <option value="address-desc">Address (Z-A)</option>
+                        <option value="total-desc">Total Revenue (High-Low)</option>
+                        <option value="total-asc">Total Revenue (Low-High)</option>
+                    </select>
+                </div>
+                <ul class="list-group mt-3" id="address-list"></ul>
+            </div>
+            <div class="tab-pane fade" id="all-bills" role="tabpanel">
+                <div class="mb-3 mt-3 d-flex align-items-center">
+                    <input type="search" id="all-bills-search-input" class="form-control me-2" placeholder="Search bills by customer, address, or item...">
+                    <select class="form-select w-auto" id="all-bills-sort-by">
+                        <option value="timestamp-desc">Date (Newest First)</option>
+                        <option value="timestamp-asc">Date (Oldest First)</option>
+                        <option value="customer-asc">Customer Name (A-Z)</option>
+                        <option value="customer-desc">Customer Name (Z-A)</option>
+                        <option value="total-desc">Total (High-Low)</option>
+                        <option value="total-asc">Total (Low-High)</option>
+                    </select>
+                </div>
+                <div class="row mt-3" id="all-bills-container"></div>
+            </div>
+            <div class="tab-pane" id="full-data" role="tabpanel">
+                <div class="row mt-3 mb-3">
+                    <div class="col-12 text-center">
+                        <button class="btn btn-outline-warning text-center" type="button" id="toggleSearchFilters" data-bs-toggle="collapse" data-bs-target="#fullDataFiltersCollapse" aria-expanded="false" aria-controls="fullDataFiltersCollapse" style="background-color: transparent; border-color: transparent;">
+                                Search
+                            </button>
+                    </div>
+                </div>
+                <div class="collapse" id="fullDataFiltersCollapse">
+                    <div class="row mt-3 mb-3" id="full-data-filters">
+                        <div class="col-md-3 mb-2">
+                            <input type="search" id="filter-customer-name-search" class="form-control" placeholder="Search Customer Name...">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <input type="search" id="filter-customer-phone-search" class="form-control" placeholder="Search Phone Number...">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <input type="search" id="filter-address-search" class="form-control" placeholder="Search Address...">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="dropdownItemFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Items
+                                </button>
+                                <ul class="dropdown-menu p-2" aria-labelledby="dropdownItemFilter" id="filter-item-checkboxes" style="max-height: 200px; overflow-y: auto;">
+                                    <!-- Checkboxes will be populated here -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <input type="number" id="filter-total-min" class="form-control" placeholder="Min Total">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <input type="number" id="filter-total-max" class="form-control" placeholder="Max Total">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <input type="search" id="filter-notes-search" class="form-control" placeholder="Search Special Notes...">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select" id="filter-order-type">
+                                <option value="">All Order Types</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive mt-3">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Customer Name</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Total</th>
+                                <th>Items</th>
+                                <th>Special Notes</th>
+                                <th>Order Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-data-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+    <footer class="footer">
+        Made by Ishaan Dalvi
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjs_w5wCLnggRxkoHFvuU1T4OBLR7xU-o",
+            authDomain: "dalviconsultancy-95a82.firebaseapp.com",
+            projectId: "dalviconsultancy-95a82",
+            storageBucket: "dalviconsultancy-95a82.firebasestorage.app",
+            messagingSenderId: "21845010374",
+            appId: "1:21845010374:web:1a0025720d9ad0c03874c7",
+            measurementId: "G-NFGGKL1QJ9"
+        };
+
+        const menuData = {
+            "Thalis": [
+                { id: "thali1", name: "Mutton Thali", price: 350 },
+                { id: "thali2", name: "Chicken Thali", price: 280 },
+                { id: "thali3", name: "Veg Thali", price: 220 },
+                { id: "thali4", name: "Fish Thali", price: 320 },
+                { id: "thali5", name: "Special Biryani Thali", price: 300 }
+            ],
+            "Starters": [
+                { id: "st1", name: "Paneer Tikka", price: 200 },
+                { id: "st2", name: "Hara Bhara Kabab", price: 180 },
+                { id: "st3", name: "Chicken 65", price: 250 }
+            ],
+            "Soups": [
+                { id: "so1", name: "Manchow Soup", price: 120 },
+                { id: "so2", name: "Tomato Soup", price: 100 }
+            ],
+            "Chinese": [
+                { id: "ch1", name: "Veg Hakka Noodles", price: 180 },
+                { id: "ch2", name: "Chicken Fried Rice", price: 220 },
+                { id: "ch3", name: "Gobi Manchurian", price: 190 }
+            ],
+            "Veg Main Course": [
+                { id: "veg1", name: "Paneer Butter Masala", price: 240 },
+                { id: "veg2", name: "Mix Veg Kolhapuri", price: 210 }
+            ],
+            "Chicken Curry": [
+                { id: "ck1", name: "Butter Chicken", price: 280 },
+                { id: "ck2", name: "Chicken Handi", price: 300 }
+            ],
+            "Mutton Curry": [
+                { id: "mt1", name: "Mutton Rogan Josh", price: 380 },
+                { id: "mt2", name: "Mutton Masala", price: 360 }
+            ],
+            "Kabab & Tandoor": [
+                { id: "tn1", name: "Chicken Tandoori (Full)", price: 450 },
+                { id: "tn2", name: "Seekh Kabab", price: 260 }
+            ],
+            "Fish": [
+                { id: "fi1", name: "Surmai Fry", price: 350 },
+                { id: "fi2", name: "Prawns Curry", price: 320 }
+            ],
+            "Breads": [
+                { id: "br1", name: "Tandoori Roti", price: 20 },
+                { id: "br2", name: "Butter Naan", price: 40 }
+            ],
+            "Rice & Biryani": [
+                { id: "ri1", name: "Jeera Rice", price: 150 },
+                { id: "ri2", name: "Chicken Dum Biryani", price: 280 },
+                { id: "ri3", name: "Mutton Dum Biryani", price: 380 }
+            ],
+            "Cold Drinks": [
+                { id: "cd1", name: "Coke/Pepsi", price: 40 },
+                { id: "cd2", name: "Buttermilk", price: 50 }
+            ]
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const loader = document.getElementById('loader');
+        let allOrders = [];
+        let analyticsSalesRevenueLineChartInstance = null; // For the Analytics tab
+        let revenueCategoryChart = null;
+        let salesRevenueTabLineChartInstance = null; // For the Sales & Revenue tab
+
+        // Helper map to quickly find item categories
+        const itemCategoryMap = {};
+        for (const category in menuData) {
+            menuData[category].forEach(item => {
+                itemCategoryMap[item.id] = category;
+            });
+        }
+
+        function processChartData(bills, granularity) {
+            const processedData = new Map();
+            let minTimestamp = Infinity;
+            let maxTimestamp = 0;
+
+            if (bills.length > 0) {
+                bills.forEach(bill => {
+                    const timestamp = bill.timestamp.seconds * 1000;
+                    if (timestamp < minTimestamp) minTimestamp = timestamp;
+                    if (timestamp > maxTimestamp) maxTimestamp = timestamp;
+                });
+            } else {
+                // If no bills, set a default range, e.g., last 30 days
+                maxTimestamp = Date.now();
+                minTimestamp = maxTimestamp - (30 * 24 * 60 * 60 * 1000);
+            }
+
+            let currentDate = new Date(minTimestamp);
+            currentDate.setHours(0, 0, 0, 0); // Normalize to start of day
+
+            const endDate = new Date(maxTimestamp);
+            endDate.setHours(23, 59, 59, 999); // Normalize to end of day
+
+            while (currentDate <= endDate) {
+                let key;
+                let nextDate = new Date(currentDate);
+
+                switch (granularity) {
+                    case 'day':
+                        key = currentDate.toLocaleDateString();
+                        nextDate.setDate(currentDate.getDate() + 1);
+                        break;
+                    case 'week':
+                        const year = currentDate.getFullYear();
+                        const month = currentDate.getMonth();
+                        const day = currentDate.getDate();
+                        const dayOfWeek = currentDate.getDay(); // 0 for Sunday, 6 for Saturday
+                        const startOfWeek = new Date(year, month, day - dayOfWeek);
+                        key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                        nextDate.setDate(currentDate.getDate() + 7);
+                        break;
+                    case 'month':
+                        key = `${currentDate.toLocaleString('default', { month: 'long' })} ${currentDate.getFullYear()}`;
+                        nextDate.setMonth(currentDate.getMonth() + 1);
+                        break;
+                    case 'year':
+                        key = currentDate.getFullYear().toString();
+                        nextDate.setFullYear(currentDate.getFullYear() + 1);
+                        break;
+                    case 'forever':
+                        key = 'Overall';
+                        nextDate = new Date(endDate.getTime() + 1); // Break loop after one iteration
+                        break;
+                }
+                processedData.set(key, { totalSales: 0, totalRevenue: 0 });
+                currentDate = nextDate;
+            }
+
+            bills.forEach(bill => {
+                const date = new Date(bill.timestamp.seconds * 1000);
+                let key;
+
+                switch (granularity) {
+                    case 'day':
+                        key = date.toLocaleDateString();
+                        break;
+                    case 'week':
+                        const year = date.getFullYear();
+                        const month = date.getMonth();
+                        const day = date.getDate();
+                        const dayOfWeek = date.getDay();
+                        const startOfWeek = new Date(year, month, day - dayOfWeek);
+                        key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                        break;
+                    case 'month':
+                        key = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+                        break;
+                    case 'year':
+                        key = date.getFullYear().toString();
+                        break;
+                    case 'forever':
+                        key = 'Overall';
+                        break;
+                }
+
+                const periodStats = processedData.get(key);
+                if (periodStats) {
+                    bill.items.forEach(item => {
+                        periodStats.totalSales += item.quantity;
+                        periodStats.totalRevenue += (item.price * item.quantity);
+                    });
+                }
+            });
+
+            const sortedKeys = [...processedData.keys()].sort((a, b) => {
+                if (granularity === 'day' || granularity === 'week' || granularity === 'month' || granularity === 'year') {
+                    // For chronological sorting, convert keys back to Date objects for comparison
+                    // Handle "Week of" format for comparison
+                    const dateA = a.startsWith('Week of ') ? new Date(a.replace('Week of ', '')) : new Date(a);
+                    const dateB = b.startsWith('Week of ') ? new Date(b.replace('Week of ', '')) : new Date(b);
+                    return dateA.getTime() - dateB.getTime();
+                } else {
+                    return 0; // No specific sorting for 'forever'
+                }
+            });
+
+            const labels = sortedKeys;
+            const salesData = sortedKeys.map(key => processedData.get(key).totalSales);
+            const revenueData = sortedKeys.map(key => processedData.get(key).totalRevenue);
+
+            return { labels, salesData, revenueData };
+        }
+
+        function showLoader() {
+            loader.style.display = 'flex';
+        }
+
+        function hideLoader() {
+            loader.style.display = 'none';
+        }
+
+        function filterOrdersByGranularity(bills) {
+            return [...bills].sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
+        }
+
+        function renderUpdatesTabContent(bills) {
+            const granularity = document.getElementById('updates-time-granularity').value;
+            const sortedBills = [...bills].sort((a, b) => a.timestamp.seconds - b.timestamp.seconds); // Ensure sorted
+
+            const container = document.getElementById('items-sold-container');
+            container.innerHTML = '';
+
+            if (sortedBills.length === 0) {
+                container.innerHTML = '<p class="text-center">No orders found.</p>';
+                return;
+            }
+
+            const groupedItems = new Map();
+
+            sortedBills.forEach(bill => {
+                let key;
+                const billDate = new Date(bill.timestamp.seconds * 1000);
+
+                switch (granularity) {
+                    case 'day':
+                        const normalizedBillDate = new Date(billDate.getFullYear(), billDate.getMonth(), billDate.getDate());
+                        key = normalizedBillDate.toLocaleDateString();
+                        break;
+                    case 'week':
+                        const startOfWeek = new Date(billDate.getFullYear(), billDate.getMonth(), billDate.getDate() - billDate.getDay());
+                        key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                        break;
+                    case 'month':
+                        key = `${billDate.toLocaleString('default', { month: 'long' })} ${billDate.getFullYear()}`;
+                        break;
+                    case 'quarter':
+                        const quarter = Math.floor(billDate.getMonth() / 3) + 1;
+                        key = `Q${quarter} ${billDate.getFullYear()}`;
+                        break;
+                    case 'year':
+                        key = billDate.getFullYear().toString();
+                        break;
+                    case 'forever':
+                        key = 'All Time';
+                        break;
+                }
+
+                if (!groupedItems.has(key)) {
+                    groupedItems.set(key, []);
+                }
+                groupedItems.get(key).push(bill);
+            });
+
+            // Render each group
+            groupedItems.forEach((billsInGroup, groupKey) => {
+                const groupTitle = `<h6 class="mt-3 col-12 text-center">${groupKey}</h6>`; // Centered group title
+                container.innerHTML += groupTitle;
+
+                billsInGroup.forEach(bill => {
+                    const itemsHtml = bill.items.map(item => `
+                        <li>${item.name} <span class="text-warning">(x${item.quantity})</span></li>
+                    `).join('');
+
+                    const card = `
+                        <div class="col-12 mb-1">
+                            <div class="card h-100 bill-card">
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        ${itemsHtml}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            });
+        }
+
+        document.getElementById('updates-tab').addEventListener('shown.bs.tab', () => {
+            renderUpdatesTabContent(allOrders);
+        });
+
+        document.getElementById('updates-time-granularity').addEventListener('change', () => {
+            renderUpdatesTabContent(allOrders);
+        });
+
+        async function fetchDataAndRender() {
+            console.log("fetchDataAndRender: Starting data fetch and render."); // Debugging line
+            showLoader();
+            const CACHE_KEY = 'foodlebeeOrdersCache';
+            const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                const { timestamp, orders } = JSON.parse(cachedData);
+                if (Date.now() - timestamp < CACHE_DURATION) {
+                    allOrders = orders;
+                    populateFullDataFilters(allOrders);
+                    // Trigger the 'shown.bs.tab' event for the initially active tab (Analytics)
+                    const updatesTabButton = document.getElementById('updates-tab');
+                    if (updatesTabButton) {
+                        new bootstrap.Tab(updatesTabButton).show();
+                    }
+                    hideLoader();
+                    return;
+                }
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "orders"));
+                allOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                const cacheData = {
+                    timestamp: Date.now(),
+                    orders: allOrders
+                };
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+
+                populateFullDataFilters(allOrders);
+
+                // Trigger the 'shown.bs.tab' event for the initially active tab (Updates)
+                const updatesTabButton = document.getElementById('updates-tab');
+                if (updatesTabButton) {
+                    new bootstrap.Tab(updatesTabButton).show();
+                }
+                renderUpdatesTabContent(allOrders);
+
+            } catch (error) {
+                console.error("Error fetching documents: ", error);
+                alert("Failed to load data. Please check your internet connection or Firebase configuration.");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Initial data fetch and render on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOMContentLoaded: Event fired."); // Debugging line
+            fetchDataAndRender();
+        });
+
+        // Re-render data when tab is shown
+        document.getElementById('analytics-tab').addEventListener('shown.bs.tab', () => {
+            renderAnalytics(allOrders);
+        });
+        document.getElementById('sales-revenue-tab').addEventListener('shown.bs.tab', () => {
+            processRevenueData();
+            renderRevenueByCategory(allOrders);
+        });
+        document.getElementById('addresses-tab').addEventListener('shown.bs.tab', () => {
+            renderAddresses(allOrders);
+        });
+        document.getElementById('all-bills-tab').addEventListener('shown.bs.tab', () => {
+            renderAllBills(allOrders);
+        });
+        document.getElementById('full-data-tab').addEventListener('shown.bs.tab', () => {
+            applyFullDataFilters();
+        });
+
+        function populateFullDataFilters(bills) {
+            const orderTypes = new Set();
+            const items = new Set();
+
+            bills.forEach(bill => {
+                if (bill.orderType) orderTypes.add(bill.orderType);
+                if (bill.items) {
+                    bill.items.forEach(item => items.add(item.name));
+                }
+            });
+
+            const populateSelect = (selectId, values) => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = `<option value="">All ${selectId.replace('filter-', '').replace('-', ' ').toLowerCase()}s</option>`;
+                [...values].sort().forEach(value => {
+                    select.innerHTML += `<option value="${value}">${value}</option>`;
+                });
+            };
+
+            populateSelect('filter-order-type', orderTypes);
+
+            const itemCheckboxesContainer = document.getElementById('filter-item-checkboxes');
+            itemCheckboxesContainer.innerHTML = ''; // Clear previous content
+            [...items].sort().forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${item}" id="item-${item.replace(/\s/g, '')}">
+                        <label class="form-check-label" for="item-${item.replace(/\s/g, '')}">
+                            ${item}
+                        </label>
+                    </div>
+                `;
+                itemCheckboxesContainer.appendChild(listItem);
+                listItem.querySelector('input').addEventListener('change', applyFullDataFilters);
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            itemCheckboxesContainer.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+        function applyFullDataFilters() {
+            const customerNameSearch = document.getElementById('filter-customer-name-search').value.toLowerCase();
+            const customerPhoneSearch = document.getElementById('filter-customer-phone-search').value.toLowerCase();
+            const addressSearch = document.getElementById('filter-address-search').value.toLowerCase();
+            const orderTypeFilter = document.getElementById('filter-order-type').value;
+            const notesSearch = document.getElementById('filter-notes-search').value.toLowerCase();
+            
+            const selectedItems = Array.from(document.querySelectorAll('#filter-item-checkboxes input[type="checkbox"]:checked'))
+                                       .map(checkbox => checkbox.value);
+
+            const minTotal = parseFloat(document.getElementById('filter-total-min').value);
+            const maxTotal = parseFloat(document.getElementById('filter-total-max').value);
+
+            let filteredData = allOrders;
+
+            if (customerNameSearch) {
+                filteredData = filteredData.filter(bill => 
+                    bill.customerName && bill.customerName.toLowerCase().includes(customerNameSearch)
+                );
+            }
+            if (customerPhoneSearch) {
+                filteredData = filteredData.filter(bill => 
+                    bill.customerPhone && bill.customerPhone.toLowerCase().includes(customerPhoneSearch)
+                );
+            }
+            if (addressSearch) {
+                filteredData = filteredData.filter(bill => 
+                    bill.address && bill.address.toLowerCase().includes(addressSearch)
+                );
+            }
+            if (orderTypeFilter) {
+                filteredData = filteredData.filter(bill => bill.orderType === orderTypeFilter);
+            }
+            if (selectedItems.length > 0) {
+                filteredData = filteredData.filter(bill => 
+                    bill.items.some(item => selectedItems.includes(item.name))
+                );
+            }
+            if (!isNaN(minTotal)) {
+                filteredData = filteredData.filter(bill => bill.total >= minTotal);
+            }
+            if (!isNaN(maxTotal)) {
+                filteredData = filteredData.filter(bill => bill.total <= maxTotal);
+            }
+            if (notesSearch) {
+                filteredData = filteredData.filter(bill => 
+                    bill.notes && bill.notes.toLowerCase().includes(notesSearch)
+                );
+            }
+
+            renderFullData(filteredData);
+        }
+
+        // Add event listeners for filter changes
+        document.getElementById('filter-customer-name-search').addEventListener('input', applyFullDataFilters);
+        document.getElementById('filter-customer-phone-search').addEventListener('input', applyFullDataFilters);
+        document.getElementById('filter-address-search').addEventListener('input', applyFullDataFilters);
+        document.getElementById('filter-order-type').addEventListener('change', applyFullDataFilters);
+        document.getElementById('filter-total-min').addEventListener('input', applyFullDataFilters);
+        document.getElementById('filter-total-max').addEventListener('input', applyFullDataFilters);
+        document.getElementById('filter-notes-search').addEventListener('input', applyFullDataFilters);
+
+        // Search functionality for Addresses tab
+        const addressesSearchInput = document.getElementById('addresses-search-input');
+        addressesSearchInput.addEventListener('input', (event) => {
+            const searchTerm = event.target.value.toLowerCase();
+            const filteredAddresses = allOrders.filter(bill => {
+                const customerName = bill.customerName ? bill.customerName.toLowerCase() : '';
+                const customerPhone = bill.customerPhone ? bill.customerPhone.toLowerCase() : '';
+                const address = bill.address ? bill.address.toLowerCase() : '';
+                return customerName.includes(searchTerm) ||
+                       customerPhone.includes(searchTerm) ||
+                       address.includes(searchTerm);
+            });
+            renderAddresses(filteredAddresses);
+        });
+
+        // Search functionality for All Bills tab
+        const allBillsSearchInput = document.getElementById('all-bills-search-input');
+        allBillsSearchInput.addEventListener('input', (event) => {
+            const searchTerm = event.target.value.toLowerCase();
+            const filteredBills = allOrders.filter(bill => {
+                const customerName = bill.customerName ? bill.customerName.toLowerCase() : '';
+                const address = bill.address ? bill.address.toLowerCase() : '';
+                const items = bill.items ? bill.items.map(item => item.name.toLowerCase()).join(' ') : '';
+
+                return customerName.includes(searchTerm) ||
+                       address.includes(searchTerm) ||
+                       items.includes(searchTerm);
+            });
+            console.log("allBillsSearchInput - filteredBills:", filteredBills);
+            renderAllBills(filteredBills);
+        });
+
+        // Add event listener for all bills sort by dropdown
+        document.getElementById('all-bills-sort-by').addEventListener('change', () => {
+            const searchTerm = document.getElementById('all-bills-search-input').value.toLowerCase();
+            const filteredBills = allOrders.filter(bill => {
+                const customerName = bill.customerName ? bill.customerName.toLowerCase() : '';
+                const address = bill.address ? bill.address.toLowerCase() : '';
+                const items = bill.items ? bill.items.map(item => item.name.toLowerCase()).join(' ') : '';
+
+                return customerName.includes(searchTerm) ||
+                       address.includes(searchTerm) ||
+                       items.includes(searchTerm);
+            });
+            console.log("all-bills-sort-by - filteredBills:", filteredBills);
+            renderAllBills(filteredBills);
+        });
+
+        
+
+        // Theme toggle logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const applyTheme = (theme) => {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                themeToggle.classList.remove('btn-light');
+                themeToggle.classList.add('btn-outline-light');
+            } else {
+                themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+                themeToggle.classList.remove('btn-outline-light');
+                themeToggle.classList.add('btn-light');
+            }
+            // Re-render analytics chart to apply new theme colors
+            if (allOrders.length > 0) {
+                renderAnalytics(allOrders);
+            }
+        };
+
+        // Apply saved theme on load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else {
+            applyTheme('dark'); // Default to dark mode if no theme is saved
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+
+        
+
+        function renderFullData(bills) {
+            const tbody = document.getElementById('full-data-body');
+            tbody.innerHTML = '';
+            if (bills.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">No matching orders found.</td></tr>';
+                return;
+            }
+            bills.forEach(bill => {
+                const itemsStr = bill.items.map(item => `${item.name} (x${item.quantity})`).join(', ');
+                const row = `<tr>
+                    <td>${new Date(bill.timestamp.seconds * 1000).toLocaleString()}</td>
+                    <td>${bill.customerName}</td>
+                    <td>${bill.customerPhone}</td>
+                    <td>${bill.address}</td>
+                    <td>${bill.total}</td>
+                    <td>${itemsStr}</td>
+                    <td>${bill.notes ? bill.notes : '-'}</td>
+                    <td>${bill.orderType}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderAllBills(bills) {
+            console.log("renderAllBills called with bills:", bills);
+            let currentBills = [...bills]; // Create a mutable copy
+
+            const sortByElement = document.getElementById('all-bills-sort-by');
+            const sortBy = sortByElement ? sortByElement.value : 'timestamp-desc'; // Default sort if element not found
+            console.log("renderAllBills - sortBy:", sortBy);
+
+            switch (sortBy) {
+                case 'timestamp-desc':
+                    currentBills.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds);
+                    break;
+                case 'timestamp-asc':
+                    currentBills.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
+                    break;
+                case 'customer-asc':
+                    currentBills.sort((a, b) => a.customerName.localeCompare(b.customerName));
+                    break;
+                case 'customer-desc':
+                    currentBills.sort((a, b) => b.customerName.localeCompare(a.customerName));
+                    break;
+                case 'total-desc':
+                    currentBills.sort((a, b) => b.total - a.total);
+                    break;
+                case 'total-asc':
+                    currentBills.sort((a, b) => a.total - b.total);
+                    break;
+            }
+            console.log("renderAllBills - sorted currentBills:", currentBills);
+
+            const container = document.getElementById('all-bills-container');
+            container.innerHTML = '';
+            if (currentBills.length === 0) {
+                container.innerHTML = '<p class="text-center">No matching bills found.</p>';
+                console.log("No matching bills found, rendering message.");
+                return;
+            }
+            currentBills.forEach(bill => {
+                const itemsHtml = bill.items.map(item => `
+                    <li>${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}</li>
+                `).join('');
+
+                const notes = bill.notes ? `<p class="mt-2"><strong>Special Notes:</strong><br>${bill.notes}</p>` : '';
+                const addressLine = bill.address ? `<p><strong>Address:</strong> ${bill.address}</p>` : '';
+
+                const card = `
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-2 mb-3">
+                        <div class="card bill-card">
+                            <div class="card-body">
+                                <p><strong>Customer Name:</strong> ${bill.customerName}</p>
+                                <p><strong>Order Type:</strong> ${bill.orderType}</p>
+                                ${addressLine}
+
+                                <hr>
+                                <p class="fw-bold">Order Details</p>
+                                <ul class="list-unstyled">
+                                    ${itemsHtml}
+                                </ul>
+                                <hr>
+                                <p class="fw-bold">Total Bill: <span class="text-warning">₹${bill.total}</span></p>
+                                <hr>
+                                ${notes}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+            console.log("renderAllBills - Bills rendered.");
+        }
+
+        function renderAddresses(bills) {
+            const addressMap = new Map();
+            bills.forEach(bill => {
+                if (bill.address) {
+                    const currentTotal = addressMap.has(bill.address) ? addressMap.get(bill.address).total : 0;
+                    addressMap.set(bill.address, { total: currentTotal + bill.total, address: bill.address });
+                }
+            });
+
+            let sortedAddresses = [...addressMap.values()];
+
+            const sortBy = document.getElementById('addresses-sort-by').value;
+
+            switch (sortBy) {
+                case 'address-asc':
+                    sortedAddresses.sort((a, b) => a.address.localeCompare(b.address));
+                    break;
+                case 'address-desc':
+                    sortedAddresses.sort((a, b) => b.address.localeCompare(a.address));
+                    break;
+                case 'total-desc':
+                    sortedAddresses.sort((a, b) => b.total - a.total);
+                    break;
+                case 'total-asc':
+                    sortedAddresses.sort((a, b) => a.total - b.total);
+                    break;
+            }
+
+            const list = document.getElementById('address-list');
+            list.innerHTML = '';
+            if (sortedAddresses.length === 0) {
+                list.innerHTML = '<li class="list-group-item">No matching addresses found.</li>';
+                return;
+            }
+            sortedAddresses.forEach(({ address, total }) => {
+                const listItem = `<li class="list-group-item d-flex justify-content-start align-items-center">
+                    <span class="text-warning me-3">₹${total.toFixed(2)}</span>
+                    <span>${address}</span>
+                </li>`;
+                list.innerHTML += listItem;
+            });
+        }
+
+        // Add event listener for addresses sort by dropdown
+        document.getElementById('addresses-sort-by').addEventListener('change', () => {
+            const searchTerm = document.getElementById('addresses-search-input').value.toLowerCase();
+            const filteredAddresses = allOrders.filter(bill => {
+                const customerName = bill.customerName ? bill.customerName.toLowerCase() : '';
+                const customerPhone = bill.customerPhone ? bill.customerPhone.toLowerCase() : '';
+                const address = bill.address ? bill.address.toLowerCase() : '';
+                return customerName.includes(searchTerm) ||
+                       customerPhone.includes(searchTerm) ||
+                       address.includes(searchTerm);
+            });
+            renderAddresses(filteredAddresses);
+        });
+
+        
+
+        
+
+        function renderRevenueByCategory(bills) {
+            console.log("renderRevenueByCategory: Starting rendering for revenue by category.");
+            const categoryRevenue = {};
+            const categorySales = {};
+
+            bills.forEach(bill => {
+                bill.items.forEach(item => {
+                    const category = itemCategoryMap[item.id];
+                    if (category) {
+                        if (!categoryRevenue[category]) {
+                            categoryRevenue[category] = 0;
+                            categorySales[category] = 0;
+                        }
+                        categoryRevenue[category] += (item.price * item.quantity);
+                        categorySales[category] += item.quantity;
+                    }
+                });
+            });
+            console.log("renderRevenueByCategory: Category revenue processed.", categoryRevenue);
+            
+
+            const labels = Object.keys(categoryRevenue);
+            const revenueData = Object.values(categoryRevenue);
+            const salesData = Object.values(categorySales);
+
+            const ctx = document.getElementById('revenue-category-chart').getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            if (revenueCategoryChart) {
+                revenueCategoryChart.destroy();
+            }
+
+            revenueCategoryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Revenue (₹)',
+                            data: revenueData,
+                            backgroundColor: isDarkMode ? '#FFD700' : '#DAA520', // Gold color
+                            borderColor: isDarkMode ? '#FFEA00' : '#DAA520',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Sales (Quantity)',
+                            data: salesData,
+                            type: 'line', // Set this dataset to be a line chart
+                            borderColor: isDarkMode ? '#00FFFF' : '#007bff', // Cyan/Blue
+                            backgroundColor: 'transparent', // No fill for the line
+                            tension: 0.1,
+                            fill: false,
+                            yAxisID: 'y1' // Use a second Y-axis for sales
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1') }
+                        },
+                        y1: { // Second Y-axis for Sales
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: { color: chartColor },
+                            grid: { drawOnChartArea: false } // Only draw grid lines for the first Y-axis
+                        },
+                        x: {
+                            ticks: { color: chartColor }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+            
+        }
+
+        function processRevenueData() {
+            const granularity = document.getElementById('time-granularity').value;
+            const { labels, salesData, revenueData } = processChartData(allOrders, granularity);
+            salesRevenueTabLineChartInstance = renderSalesRevenueLineChart(labels, salesData, revenueData, 'revenue-sales-line-chart', salesRevenueTabLineChartInstance);
+        }
+
+        function renderTopSellingItemsChart(bills) {
+            const itemSales = {};
+            bills.forEach(bill => {
+                bill.items.forEach(item => {
+                    itemSales[item.name] = (itemSales[item.name] || 0) + item.quantity;
+                });
+            });
+
+            const sortedItems = Object.entries(itemSales).sort(([, a], [, b]) => b - a).slice(0, 5);
+            const labels = sortedItems.map(([item]) => item);
+            const data = sortedItems.map(([, quantity]) => quantity);
+
+            const ctx = document.getElementById('top-selling-items-chart').getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Quantity Sold',
+                        data: data,
+                        backgroundColor: isDarkMode ? '#FFD700' : '#DAA520',
+                        borderColor: isDarkMode ? '#FFEA00' : '#DAA520',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1'), drawOnChartArea: true }
+                        },
+                        x: {
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1'), drawOnChartArea: true }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopCustomersChart(bills) {
+            const customerRevenue = {};
+            bills.forEach(bill => {
+                customerRevenue[bill.customerName] = (customerRevenue[bill.customerName] || 0) + bill.total;
+            });
+
+            const sortedCustomers = Object.entries(customerRevenue).sort(([, a], [, b]) => b - a).slice(0, 5);
+            const labels = sortedCustomers.map(([customer]) => customer);
+            const data = sortedCustomers.map(([, revenue]) => revenue);
+
+            const ctx = document.getElementById('top-customers-chart').getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: data,
+                        backgroundColor: isDarkMode ? '#00FFFF' : '#007bff',
+                        borderColor: isDarkMode ? '#00FFFF' : '#007bff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1'), drawOnChartArea: true }
+                        },
+                        x: {
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1'), drawOnChartArea: true }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderOrderTypeChart(bills) {
+            const orderTypeCounts = {};
+            bills.forEach(bill => {
+                orderTypeCounts[bill.orderType] = (orderTypeCounts[bill.orderType] || 0) + 1;
+            });
+
+            const labels = Object.keys(orderTypeCounts);
+            const data = Object.values(orderTypeCounts);
+
+            const ctx = document.getElementById('order-type-chart').getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF9900'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSalesRevenueLineChart(labels, salesData, revenueData, chartId, chartInstanceVariable) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            if (chartInstanceVariable) {
+                chartInstanceVariable.destroy();
+            }
+
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Revenue (₹)',
+                            data: revenueData,
+                            borderColor: isDarkMode ? '#FFD700' : '#DAA520',
+                            backgroundColor: isDarkMode ? 'rgba(255, 215, 0, 0.2)' : 'rgba(218, 165, 32, 0.2)',
+                            tension: 0.1,
+                            fill: true,
+                            yAxisID: 'y-revenue'
+                        },
+                        {
+                            label: 'Sales (Quantity)',
+                            data: salesData,
+                            borderColor: isDarkMode ? '#00FFFF' : '#007bff',
+                            backgroundColor: isDarkMode ? 'rgba(0, 255, 255, 0.2)' : 'rgba(0, 123, 255, 0.2)',
+                            tension: 0.1,
+                            fill: true,
+                            yAxisID: 'y-sales'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        'y-revenue': {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1'), drawOnChartArea: true } // Ensure grid lines are drawn
+                        },
+                        'y-sales': {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: { color: chartColor },
+                            grid: { drawOnChartArea: false } // Only draw grid lines for the first Y-axis
+                        },
+                        x: {
+                            ticks: { color: chartColor },
+                            grid: { color: chartColor.replace('0.8', '0.1'), drawOnChartArea: true } // Ensure grid lines are drawn
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAnalytics(bills) {
+            console.log("renderAnalytics called with bills:", bills); // Debugging line
+            // Destroy existing charts before rendering new ones to prevent duplicates
+            if (analyticsSalesRevenueLineChartInstance) analyticsSalesRevenueLineChartInstance.destroy();
+            if (revenueCategoryChart) revenueCategoryChart.destroy(); // Assuming revenueCategoryChart is global or passed
+
+            const granularity = document.getElementById('analytics-time-granularity').value;
+            const { labels, salesData, revenueData } = processChartData(bills, granularity);
+            console.log("processChartData output:", { labels, salesData, revenueData }); // Debugging line
+
+            renderTopSellingItemsChart(bills);
+            renderTopCustomersChart(bills);
+            renderOrderTypeChart(bills);
+            renderAverageOrderValueChart(bills);
+            renderTotalOrdersChart(bills);
+        }
+
+        document.getElementById('analytics-time-granularity').addEventListener('change', () => {
+            renderAnalytics(allOrders);
+        });
+
+        function renderAverageOrderValueChart(bills) {
+            const granularity = document.getElementById('analytics-time-granularity').value;
+            const { labels, revenueData } = processChartData(bills, granularity);
+
+            const avgOrderValues = labels.map((label, index) => {
+                const totalRevenue = revenueData[index];
+                const ordersForPeriod = bills.filter(bill => {
+                    const date = new Date(bill.timestamp.seconds * 1000);
+                    let key;
+                    switch (granularity) {
+                        case 'day':
+                            key = date.toLocaleDateString();
+                            break;
+                        case 'week':
+                            const year = date.getFullYear();
+                            const month = date.getMonth();
+                            const day = date.getDate();
+                            const dayOfWeek = date.getDay();
+                            const startOfWeek = new Date(year, month, day - dayOfWeek);
+                            key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                            break;
+                        case 'month':
+                            key = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+                            break;
+                        case 'year':
+                            key = date.getFullYear().toString();
+                            break;
+                        case 'forever':
+                            key = 'Overall';
+                            break;
+                    }
+                    return key === label;
+                });
+                return ordersForPeriod.length > 0 ? totalRevenue / ordersForPeriod.length : 0;
+            });
+
+            const ctx = document.getElementById('avg-order-value-chart').getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Average Order Value (₹)',
+                        data: avgOrderValues,
+                        borderColor: isDarkMode ? '#FFD700' : '#DAA520',
+                        backgroundColor: isDarkMode ? 'rgba(255, 215, 0, 0.2)' : 'rgba(218, 165, 32, 0.2)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: chartColor }
+                        },
+                        x: {
+                            ticks: { color: chartColor }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTotalOrdersChart(bills) {
+            const granularity = document.getElementById('analytics-time-granularity').value;
+            const { labels, salesData } = processChartData(bills, granularity);
+
+            const ctx = document.getElementById('total-orders-chart').getContext('2d');
+            const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const chartColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Orders',
+                        data: salesData,
+                        backgroundColor: isDarkMode ? '#36A2EB' : '#4BC0C0',
+                        borderColor: isDarkMode ? '#36A2EB' : '#4BC0C0',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: chartColor }
+                        },
+                        x: {
+                            ticks: { color: chartColor }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: chartColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('time-granularity').addEventListener('change', processRevenueData);
+    </script>
+</body>
+</html>
