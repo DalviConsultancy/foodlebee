@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -599,11 +600,17 @@
                 maxTimestamp = Date.now();
                 minTimestamp = maxTimestamp - (30 * 24 * 60 * 60 * 1000);
             }
+            
+            
 
             let currentDate = new Date(minTimestamp);
             currentDate.setHours(0, 0, 0, 0); // Normalize to start of day
 
-            const endDate = new Date(maxTimestamp);
+            let endDate = new Date(maxTimestamp);
+            const today = new Date();
+            if (endDate < today) {
+                endDate = today;
+            }
             endDate.setHours(23, 59, 59, 999); // Normalize to end of day
 
             while (currentDate <= endDate) {
@@ -612,7 +619,7 @@
 
                 switch (granularity) {
                     case 'day':
-                        key = currentDate.toLocaleDateString();
+                        key = currentDate.toLocaleDateString('en-GB');
                         nextDate.setDate(currentDate.getDate() + 1);
                         break;
                     case 'week':
@@ -621,7 +628,7 @@
                         const day = currentDate.getDate();
                         const dayOfWeek = currentDate.getDay(); // 0 for Sunday, 6 for Saturday
                         const startOfWeek = new Date(year, month, day - dayOfWeek);
-                        key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                        key = `Week of ${startOfWeek.toLocaleDateString('en-GB')}`;
                         nextDate.setDate(currentDate.getDate() + 7);
                         break;
                     case 'month':
@@ -647,7 +654,7 @@
 
                 switch (granularity) {
                     case 'day':
-                        key = date.toLocaleDateString();
+                        key = date.toLocaleDateString('en-GB');
                         break;
                     case 'week':
                         const year = date.getFullYear();
@@ -655,7 +662,7 @@
                         const day = date.getDate();
                         const dayOfWeek = date.getDay();
                         const startOfWeek = new Date(year, month, day - dayOfWeek);
-                        key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                        key = `Week of ${startOfWeek.toLocaleDateString('en-GB')}`;
                         break;
                     case 'month':
                         key = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
@@ -710,30 +717,30 @@
 
         function renderUpdatesTabContent(bills) {
             const granularity = document.getElementById('updates-time-granularity').value;
-            const sortedBills = [...bills].sort((a, b) => a.timestamp.seconds - b.timestamp.seconds); // Ensure sorted
-
+            
             const container = document.getElementById('items-sold-container');
             container.innerHTML = '';
 
-            if (sortedBills.length === 0) {
-                container.innerHTML = '<p class="text-center">No orders found.</p>';
-                return;
-            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Start of today
+            const todayTimestamp = today.getTime();
+            const endOfTodayTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999).getTime();
 
             const groupedItems = new Map();
 
-            sortedBills.forEach(bill => {
+            // Group existing bills by the chosen granularity
+            bills.forEach(bill => {
                 let key;
                 const billDate = new Date(bill.timestamp.seconds * 1000);
 
                 switch (granularity) {
                     case 'day':
                         const normalizedBillDate = new Date(billDate.getFullYear(), billDate.getMonth(), billDate.getDate());
-                        key = normalizedBillDate.toLocaleDateString();
+                        key = normalizedBillDate.toLocaleDateString('en-GB');
                         break;
                     case 'week':
                         const startOfWeek = new Date(billDate.getFullYear(), billDate.getMonth(), billDate.getDate() - billDate.getDay());
-                        key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                        key = `Week of ${startOfWeek.toLocaleDateString('en-GB')}`;
                         break;
                     case 'month':
                         key = `${billDate.toLocaleString('default', { month: 'long' })} ${billDate.getFullYear()}`;
@@ -756,30 +763,97 @@
                 groupedItems.get(key).push(bill);
             });
 
-            // Render each group
-            groupedItems.forEach((billsInGroup, groupKey) => {
-                const groupTitle = `<h6 class="mt-3 col-12 text-center">${groupKey}</h6>`; // Centered group title
+            // Always display today's date for 'day' granularity
+            if (granularity === 'day') {
+                const todayKey = today.toLocaleDateString('en-GB');
+                const billsForToday = groupedItems.get(todayKey) || [];
+                const groupTitle = `<h6 class="mt-3 col-12 text-center">${todayKey}</h6>`;
                 container.innerHTML += groupTitle;
 
-                billsInGroup.forEach(bill => {
-                    const itemsHtml = bill.items.map(item => `
-                        <li>${item.name} <span class="text-warning">(x${item.quantity})</span></li>
-                    `).join('');
+                if (billsForToday.length === 0) {
+                    container.innerHTML += '<p class="text-center">No orders found for today.</p>';
+                } else {
+                    billsForToday.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
+                    billsForToday.forEach(bill => {
+                        const itemsHtml = bill.items.map(item => `
+                            <li>${item.name} <span class="text-warning">(x${item.quantity})</span></li>
+                        `).join('');
 
-                    const card = `
-                        <div class="col-12 mb-1">
-                            <div class="card h-100 bill-card">
-                                <div class="card-body">
-                                    <ul class="list-unstyled">
-                                        ${itemsHtml}
-                                    </ul>
+                        const card = `
+                            <div class="col-12 mb-1">
+                                <div class="card h-100 bill-card">
+                                    <div class="card-body">
+                                        <ul class="list-unstyled">
+                                            ${itemsHtml}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-            });
+                        `;
+                        container.innerHTML += card;
+                    });
+                }
+            } else {
+                // Existing logic for other granularities
+                let tempDate = new Date(todayTimestamp); // Start from today for other granularities too
+                while (tempDate.getTime() <= endOfTodayTimestamp) { // Iterate only for today for other granularities
+                    let key;
+                    let nextTempDate = new Date(tempDate);
+
+                    switch (granularity) {
+                        case 'week':
+                            const startOfWeek = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate() - tempDate.getDay());
+                            key = `Week of ${startOfWeek.toLocaleDateString('en-GB')}`;
+                            nextTempDate.setDate(tempDate.getDate() + 7);
+                            break;
+                        case 'month':
+                            key = `${tempDate.toLocaleString('default', { month: 'long' })} ${tempDate.getFullYear()}`;
+                            nextTempDate.setMonth(tempDate.getMonth() + 1);
+                            break;
+                        case 'quarter':
+                            const quarter = Math.floor(tempDate.getMonth() / 3) + 1;
+                            key = `Q${quarter} ${tempDate.getFullYear()}`;
+                            nextTempDate.setMonth(tempDate.getMonth() + 3);
+                            break;
+                        case 'year':
+                            key = tempDate.getFullYear().toString();
+                            nextTempDate.setFullYear(tempDate.getFullYear() + 1);
+                            break;
+                        case 'forever':
+                            key = 'All Time';
+                            nextTempDate = new Date(endOfTodayTimestamp + 1); // Break loop after one iteration
+                            break;
+                    }
+
+                    const billsInGroup = groupedItems.get(key) || [];
+                    const groupTitle = `<h6 class="mt-3 col-12 text-center">${key}</h6>`;
+                    container.innerHTML += groupTitle;
+
+                    if (billsInGroup.length === 0) {
+                        container.innerHTML += '<p class="text-center">No orders found for this period.</p>';
+                    } else {
+                        billsInGroup.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
+                        billsInGroup.forEach(bill => {
+                            const itemsHtml = bill.items.map(item => `
+                                <li>${item.name} <span class="text-warning">(x${item.quantity})</span></li>
+                            `).join('');
+
+                            const card = `
+                                <div class="col-12 mb-1">
+                                    <div class="card h-100 bill-card">
+                                        <ul class="list-unstyled">
+                                            ${itemsHtml}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                            container.innerHTML += card;
+                        });
+                    }
+                    tempDate = nextTempDate;
+                    if (granularity === 'forever') break;
+                }
+            }
         }
 
         document.getElementById('updates-tab').addEventListener('shown.bs.tab', () => {
@@ -791,37 +865,17 @@
         });
 
         async function fetchDataAndRender() {
-            console.log("fetchDataAndRender: Starting data fetch and render."); // Debugging line
+            
             showLoader();
-            const CACHE_KEY = 'foodlebeeOrdersCache';
-            const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
-
-            const cachedData = localStorage.getItem(CACHE_KEY);
-            if (cachedData) {
-                const { timestamp, orders } = JSON.parse(cachedData);
-                if (Date.now() - timestamp < CACHE_DURATION) {
-                    allOrders = orders;
-                    populateFullDataFilters(allOrders);
-                    // Trigger the 'shown.bs.tab' event for the initially active tab (Analytics)
-                    const updatesTabButton = document.getElementById('updates-tab');
-                    if (updatesTabButton) {
-                        new bootstrap.Tab(updatesTabButton).show();
-                    }
-                    hideLoader();
-                    return;
-                }
-            }
-
+            // Removed caching logic to ensure fresh data fetch every time
             try {
                 const querySnapshot = await getDocs(collection(db, "orders"));
-                allOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allOrders = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                     
+                    return { id: doc.id, ...data };
+                });
                 
-                const cacheData = {
-                    timestamp: Date.now(),
-                    orders: allOrders
-                };
-                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-
                 populateFullDataFilters(allOrders);
 
                 // Trigger the 'shown.bs.tab' event for the initially active tab (Updates)
@@ -841,7 +895,7 @@
 
         // Initial data fetch and render on page load
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOMContentLoaded: Event fired."); // Debugging line
+            
             fetchDataAndRender();
         });
 
@@ -996,7 +1050,7 @@
                        address.includes(searchTerm) ||
                        items.includes(searchTerm);
             });
-            console.log("allBillsSearchInput - filteredBills:", filteredBills);
+            
             renderAllBills(filteredBills);
         });
 
@@ -1012,7 +1066,7 @@
                        address.includes(searchTerm) ||
                        items.includes(searchTerm);
             });
-            console.log("all-bills-sort-by - filteredBills:", filteredBills);
+            
             renderAllBills(filteredBills);
         });
 
@@ -1064,7 +1118,7 @@
             bills.forEach(bill => {
                 const itemsStr = bill.items.map(item => `${item.name} (x${item.quantity})`).join(', ');
                 const row = `<tr>
-                    <td>${new Date(bill.timestamp.seconds * 1000).toLocaleString()}</td>
+                    <td>${new Date(bill.timestamp.seconds * 1000).toLocaleString('en-GB')}</td>
                     <td>${bill.customerName}</td>
                     <td>${bill.customerPhone}</td>
                     <td>${bill.address}</td>
@@ -1078,12 +1132,12 @@
         }
 
         function renderAllBills(bills) {
-            console.log("renderAllBills called with bills:", bills);
+            
             let currentBills = [...bills]; // Create a mutable copy
 
             const sortByElement = document.getElementById('all-bills-sort-by');
             const sortBy = sortByElement ? sortByElement.value : 'timestamp-desc'; // Default sort if element not found
-            console.log("renderAllBills - sortBy:", sortBy);
+            
 
             switch (sortBy) {
                 case 'timestamp-desc':
@@ -1105,13 +1159,13 @@
                     currentBills.sort((a, b) => a.total - b.total);
                     break;
             }
-            console.log("renderAllBills - sorted currentBills:", currentBills);
+            
 
             const container = document.getElementById('all-bills-container');
             container.innerHTML = '';
             if (currentBills.length === 0) {
-                container.innerHTML = '<p class="text-center">No matching bills found.</p>';
-                console.log("No matching bills found, rendering message.");
+                
+                
                 return;
             }
             currentBills.forEach(bill => {
@@ -1145,7 +1199,7 @@
                 `;
                 container.innerHTML += card;
             });
-            console.log("renderAllBills - Bills rendered.");
+            
         }
 
         function renderAddresses(bills) {
@@ -1210,7 +1264,7 @@
         
 
         function renderRevenueByCategory(bills) {
-            console.log("renderRevenueByCategory: Starting rendering for revenue by category.");
+            
             const categoryRevenue = {};
             const categorySales = {};
 
@@ -1227,7 +1281,7 @@
                     }
                 });
             });
-            console.log("renderRevenueByCategory: Category revenue processed.", categoryRevenue);
+            
             
 
             const labels = Object.keys(categoryRevenue);
@@ -1512,14 +1566,14 @@
         }
 
         function renderAnalytics(bills) {
-            console.log("renderAnalytics called with bills:", bills); // Debugging line
+            
             // Destroy existing charts before rendering new ones to prevent duplicates
             if (analyticsSalesRevenueLineChartInstance) analyticsSalesRevenueLineChartInstance.destroy();
             if (revenueCategoryChart) revenueCategoryChart.destroy(); // Assuming revenueCategoryChart is global or passed
 
             const granularity = document.getElementById('analytics-time-granularity').value;
             const { labels, salesData, revenueData } = processChartData(bills, granularity);
-            console.log("processChartData output:", { labels, salesData, revenueData }); // Debugging line
+            
 
             renderTopSellingItemsChart(bills);
             renderTopCustomersChart(bills);
@@ -1543,7 +1597,7 @@
                     let key;
                     switch (granularity) {
                         case 'day':
-                            key = date.toLocaleDateString();
+                            key = date.toLocaleDateString('en-GB');
                             break;
                         case 'week':
                             const year = date.getFullYear();
@@ -1551,7 +1605,7 @@
                             const day = date.getDate();
                             const dayOfWeek = date.getDay();
                             const startOfWeek = new Date(year, month, day - dayOfWeek);
-                            key = `Week of ${startOfWeek.toLocaleDateString()}`;
+                            key = `Week of ${startOfWeek.toLocaleDateString('en-GB')}`;
                             break;
                         case 'month':
                             key = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
